@@ -1,70 +1,94 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Carrot Console — Nara Recorder</title>
-<link rel="stylesheet" href="styles.css"/>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carrot Console — Nara Recorder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <video
+      autoplay
+      loop
+      muted
+      playsinline
+      class="bgvid"
+      preload="auto"
+      poster="A_digital_image_features_a_dark_navy-blue_backgrou.png"
+    >
+      <source src="splash_intro.mp4" type="video/mp4" />
+    </video>
+    <style>
+      .bgvid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+      }
+    </style>
 
-<video autoplay loop muted playsinline class="bgvid">
-  <source src="assets/splash_intro.mp4" type="video/mp4">
-</video>
-<style>
-.bgvid {
-  position:absolute;top:0;left:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  z-index:-1;
-}
-</style>
+    <div class="container">
+      <h1>🥕 Carrot Console <span class="badge">Recorder + Meter</span></h1>
+      <p class="small">
+        Record moments, award carrots for wins, and issue gentle reset tokens when needed. Exports a
+        weekly digest.
+      </p>
 
-<div class="container">
-  <h1>🥕 Carrot Console <span class="badge">Recorder + Meter</span></h1>
-  <p class="small">Record moments, award carrots for wins, and issue gentle reset tokens when needed. Exports a weekly digest.</p>
+      <div class="grid">
+        <div class="card">
+          <h2>🎙️ Recorder</h2>
+          <div class="row">
+            <button class="btn" id="recBtn">Start Recording</button>
+            <button class="btn" id="stopBtn" disabled>Stop</button>
+          </div>
+          <label>Tag</label>
+          <select id="tag">
+            <option>win</option>
+            <option>calm reset</option>
+            <option>geometry quest</option>
+            <option>reading</option>
+            <option>note to teacher</option>
+          </select>
+          <label>Note</label>
+          <textarea id="note" rows="3" placeholder="Describe the moment…"></textarea>
+          <hr />
+          <div id="clips" class="grid"></div>
+        </div>
 
-  <div class="grid">
-    <div class="card">
-      <h2>🎙️ Recorder</h2>
-      <div class="row">
-        <button class="btn" id="recBtn">Start Recording</button>
-        <button class="btn" id="stopBtn" disabled>Stop</button>
+        <div class="card">
+          <h2>🏆 Carrot Meter</h2>
+          <div class="progress"><div id="meterFill"></div></div>
+          <p class="small">Carrots: <b id="carrots">0</b> · Resets: <b id="resets">0</b></p>
+          <div class="row">
+            <button class="btn" id="add1">+1 Carrot</button>
+            <button class="btn" id="add5">+5 Carrots</button>
+            <button class="btn" id="resetToken">Issue Reset Token</button>
+          </div>
+          <div class="note small">
+            “Reset Token” = short pause & breath, not punishment. It cools the meter for 60s, then
+            resumes.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🧾 Weekly Digest</h2>
+          <div class="row">
+            <button class="btn" id="exportHTML">Export HTML</button>
+            <button class="btn" id="exportJSON">Export JSON</button>
+            <button class="btn" id="clearAll">Clear All (local)</button>
+          </div>
+          <p class="small">
+            Digest includes totals, timeline of clips/notes, and a carrot graph snapshot.
+          </p>
+          <div id="digestPreview" class="small"></div>
+        </div>
       </div>
-      <label>Tag</label>
-      <select id="tag"><option>win</option><option>calm reset</option><option>geometry quest</option><option>reading</option><option>note to teacher</option></select>
-      <label>Note</label>
-      <textarea id="note" rows="3" placeholder="Describe the moment…"></textarea>
-      <hr/>
-      <div id="clips" class="grid"></div>
-    </div>
 
-    <div class="card">
-      <h2>🏆 Carrot Meter</h2>
-      <div class="progress"><div id="meterFill"></div></div>
-      <p class="small">Carrots: <b id="carrots">0</b> · Resets: <b id="resets">0</b></p>
-      <div class="row">
-        <button class="btn" id="add1">+1 Carrot</button>
-        <button class="btn" id="add5">+5 Carrots</button>
-        <button class="btn" id="resetToken">Issue Reset Token</button>
-      </div>
-      <div class="note small">“Reset Token” = short pause & breath, not punishment. It cools the meter for 60s, then resumes.</div>
+      <footer>Blue $nake Studio · v0.1 MVP</footer>
     </div>
-
-    <div class="card">
-      <h2>🧾 Weekly Digest</h2>
-      <div class="row">
-        <button class="btn" id="exportHTML">Export HTML</button>
-        <button class="btn" id="exportJSON">Export JSON</button>
-        <button class="btn" id="clearAll">Clear All (local)</button>
-      </div>
-      <p class="small">Digest includes totals, timeline of clips/notes, and a carrot graph snapshot.</p>
-      <div id="digestPreview" class="small"></div>
-    </div>
-  </div>
-
-  <footer>Blue $nake Studio · v0.1 MVP</footer>
-</div>
-<script src="console.js"></script>
-</body>
+    <script src="console.js"></script>
+  </body>
 </html>
