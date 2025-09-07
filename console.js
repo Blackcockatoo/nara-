@@ -21,7 +21,7 @@ async function startRec(){
     mediaRecorder.ondataavailable = e=> chunks.push(e.data);
     mediaRecorder.onstop = saveClip;
     mediaRecorder.start();
-    recBtn.disabled = true; stopBtn.disabled = False = false;
+    recBtn.disabled = true; stopBtn.disabled = false;
     recBtn.textContent='Recording…';
   }catch(e){
     alert('Microphone permission denied or unsupported.');
