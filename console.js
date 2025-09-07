@@ -12,6 +12,11 @@ const stopBtn = document.getElementById('stopBtn');
 const tagSel = document.getElementById('tag');
 const noteTa = document.getElementById('note');
 const clipsDiv = document.getElementById('clips');
+const playAllBtn = document.createElement('button');
+playAllBtn.id='playAll';
+playAllBtn.className='btn';
+playAllBtn.textContent='Play All';
+clipsDiv.parentNode.insertBefore(playAllBtn, clipsDiv);
 
 async function startRec(){
   try{
@@ -55,6 +60,7 @@ function saveClip(){
 
 function renderClips(){
   const list = DB.get('cc_clips', []);
+  playAllBtn.disabled = list.length===0;
   clipsDiv.innerHTML='';
   list.slice().reverse().forEach((c,i)=>{
     const card = document.createElement('div');
@@ -66,6 +72,24 @@ function renderClips(){
   });
 }
 renderClips();
+
+let playlistAudio;
+function playAllClips(){
+  const list = DB.get('cc_clips', []);
+  if(!list.length) return;
+  let i=0;
+  playlistAudio = playlistAudio || new Audio();
+  playlistAudio.src = list[i].audio;
+  playlistAudio.play();
+  playlistAudio.onended = ()=>{
+    i++;
+    if(i<list.length){
+      playlistAudio.src = list[i].audio;
+      playlistAudio.play();
+    }
+  };
+}
+playAllBtn.onclick = playAllClips;
 
 // ===== Carrot Meter =====
 let carrots = DB.get('cc_carrots', 0);
