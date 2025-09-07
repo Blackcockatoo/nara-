@@ -1,10 +1,3 @@
-
-// Local data helpers
-const DB = {
-  get(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch(e){ return fallback; }},
-  set(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-};
-
 // ===== Recorder =====
 let mediaRecorder, chunks = [], stream=null;
 const recBtn = document.getElementById('recBtn');
@@ -26,7 +19,7 @@ async function startRec(){
     mediaRecorder.ondataavailable = e=> chunks.push(e.data);
     mediaRecorder.onstop = saveClip;
     mediaRecorder.start();
-    recBtn.disabled = true; stopBtn.disabled = False = false;
+      recBtn.disabled = true; stopBtn.disabled = false;
     recBtn.textContent='Recording…';
   }catch(e){
     alert('Microphone permission denied or unsupported.');
