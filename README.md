@@ -13,3 +13,5 @@ Dirty Gold `#d1b464`, Neon Cyan `#28c6d9`, Midnight `#0b1020 → #111935`, Shado
 Open `index.html` locally or serve the folder:
 ```bash
 python3 -m http.server 8080
+```
+
