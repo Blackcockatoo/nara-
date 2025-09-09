@@ -1,70 +1,140 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Carrot Console — Nara Recorder</title>
-<link rel="stylesheet" href="styles.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Carrot Console — Nara Recorder</title>
+  <meta name="theme-color" content="#0b1530" />
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/icons/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+
+  <link rel="preload" as="video" href="assets/splash_intro.mp4" type="video/mp4">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="app-header" role="banner">
+    <h1 id="appTitle">Carrot Console <span class="badge">v0.2</span></h1>
+    <nav aria-label="Primary">
+      <button id="openSettingsBtn" class="btn" aria-haspopup="dialog" aria-controls="settingsDialog">School Settings</button>
+      <button id="wipeAllBtn" class="btn danger" aria-describedby="wipeHint">Wipe All</button>
+      <span id="wipeHint" class="sr-only">This clears all saved data after a confirmation prompt.</span>
+    </nav>
+  </header>
 
-<video autoplay loop muted playsinline class="bgvid">
-  <source src="assets/splash_intro.mp4" type="video/mp4">
-</video>
-<style>
-.bgvid {
-  position:absolute;top:0;left:0;
-  width:100%;height:100%;
-  object-fit:cover;
-  z-index:-1;
-}
-</style>
-
-<div class="container">
-  <h1>🥕 Carrot Console <span class="badge">Recorder + Meter</span></h1>
-  <p class="small">Record moments, award carrots for wins, and issue gentle reset tokens when needed. Exports a weekly digest.</p>
-
-  <div class="grid">
-    <div class="card">
-      <h2>🎙️ Recorder</h2>
-      <div class="row">
-        <button class="btn" id="recBtn">Start Recording</button>
-        <button class="btn" id="stopBtn" disabled>Stop</button>
-      </div>
-      <label>Tag</label>
-      <select id="tag"><option>win</option><option>calm reset</option><option>geometry quest</option><option>reading</option><option>note to teacher</option></select>
-      <label>Note</label>
-      <textarea id="note" rows="3" placeholder="Describe the moment…"></textarea>
-      <hr/>
-      <div id="clips" class="grid"></div>
+  <main id="main" class="layout" role="main">
+    <!-- Background video with reduced-motion guard -->
+    <div class="bg-video" aria-hidden="true">
+      <video id="bgVid" autoplay muted loop playsinline preload="metadata" poster="assets/images/hero.png">
+        <source src="assets/splash_intro.mp4" type="video/mp4" />
+      </video>
     </div>
 
-    <div class="card">
-      <h2>🏆 Carrot Meter</h2>
-      <div class="progress"><div id="meterFill"></div></div>
-      <p class="small">Carrots: <b id="carrots">0</b> · Resets: <b id="resets">0</b></p>
-      <div class="row">
-        <button class="btn" id="add1">+1 Carrot</button>
-        <button class="btn" id="add5">+5 Carrots</button>
-        <button class="btn" id="resetToken">Issue Reset Token</button>
+    <!-- Recorder Panel -->
+    <section class="card" aria-labelledby="recHeading">
+      <h2 id="recHeading">Recorder</h2>
+      <div class="rec-controls">
+        <div class="rec-row">
+          <button id="startBtn" class="btn primary" aria-pressed="false">Start Recording</button>
+          <button id="stopBtn" class="btn" disabled>Stop</button>
+          <span id="recTimer" aria-live="polite" class="meter-text" title="Recording duration">00:00</span>
+        </div>
+        <div class="rec-row">
+          <label for="tagSelect">Tag</label>
+          <select id="tagSelect">
+            <option value="win">Win</option>
+            <option value="calm">Calm reset</option>
+            <option value="maths">Maths</option>
+            <option value="reading">Reading</option>
+            <option value="note">Note to teacher</option>
+          </select>
+          <label for="noteInput" class="sr-only">Note</label>
+          <input id="noteInput" type="text" placeholder="Optional note" maxlength="160" />
+          <button id="saveBtn" class="btn" disabled>Save Clip</button>
+        </div>
+        <canvas id="waveCanvas" width="480" height="64" aria-hidden="true"></canvas>
       </div>
-      <div class="note small">“Reset Token” = short pause & breath, not punishment. It cools the meter for 60s, then resumes.</div>
-    </div>
+      <div id="clips" class="clips" aria-live="polite" aria-busy="false"></div>
+    </section>
 
-    <div class="card">
-      <h2>🧾 Weekly Digest</h2>
-      <div class="row">
-        <button class="btn" id="exportHTML">Export HTML</button>
-        <button class="btn" id="exportJSON">Export JSON</button>
-        <button class="btn" id="clearAll">Clear All (local)</button>
+    <!-- Carrot Meter Panel -->
+    <section class="card" aria-labelledby="meterHeading">
+      <h2 id="meterHeading">Carrot Meter</h2>
+      <div class="meter">
+        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="meterHeading">
+          <div id="progressBar" class="bar" style="width:0%"></div>
+        </div>
+        <div class="meter-row">
+          <button id="carrot1" class="btn">+1</button>
+          <button id="carrot5" class="btn">+5</button>
+          <button id="resetToken" class="btn warn">Reset Token</button>
+          <span id="meterLabel" class="meter-text">0 carrots · 0 resets</span>
+        </div>
       </div>
-      <p class="small">Digest includes totals, timeline of clips/notes, and a carrot graph snapshot.</p>
-      <div id="digestPreview" class="small"></div>
-    </div>
-  </div>
+    </section>
 
-  <footer>Blue $nake Studio · v0.1 MVP</footer>
-</div>
-<script src="console.js"></script>
+    <!-- Exports Panel -->
+    <section class="card" aria-labelledby="exportHeading">
+      <h2 id="exportHeading">Weekly Digest / Export</h2>
+      <div class="export-row">
+        <button id="exportHtml" class="btn">Export HTML</button>
+        <button id="exportJson" class="btn">Export JSON</button>
+        <button id="exportCsv" class="btn">Export CSV</button>
+        <label class="file-import">
+          <input id="importJson" type="file" accept="application/json" aria-label="Import JSON" />
+          Import JSON
+        </label>
+      </div>
+      <p class="hint">Exports include a carrot‑meter snapshot image. CSV includes clip metadata. JSON is suitable for re‑import.</p>
+      <canvas id="meterCanvas" width="480" height="120" class="sr-only" aria-hidden="true"></canvas>
+    </section>
+  </main>
+
+  <!-- Settings Dialog -->
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <form method="dialog" id="settingsForm">
+      <h2 id="settingsTitle">School Settings</h2>
+      <label>
+        Class / Group name
+        <input id="setClass" type="text" placeholder="e.g., 3B — 2025" />
+      </label>
+      <label>
+        Student list (comma‑separated)
+        <textarea id="setStudents" rows="3" placeholder="Ada, Imran, Mei, …"></textarea>
+      </label>
+      <label>
+        Teacher / School (optional)
+        <input id="setTeacher" type="text" placeholder="Ms. Novak — Kingsley Park" />
+      </label>
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn">Cancel</button>
+        <button id="saveSettings" value="default" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <footer class="app-footer" role="contentinfo">
+    <small>Blue $nake Studio · Carrot Console MVP · Offline‑ready</small>
+  </footer>
+
+  <script src="console.js" type="module"></script>
+  <script>
+    // PWA registration (simple)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js');
+      });
+    }
+
+    // Respect reduced motion
+    const vid = document.getElementById('bgVid');
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mq.matches && vid) {
+      vid.removeAttribute('autoplay');
+      vid.pause();
+    }
+  </script>
 </body>
 </html>
