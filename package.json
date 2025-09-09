@@ -1,0 +1,10 @@
+{
+  "name": "nara",
+  "private": true,
+  "scripts": {
+    "start": "serve . -l 3000",
+    "preview": "serve . -l 3000",
+    "lint": "eslint app.js || true",
+    "fmt": "prettier --write \"**/*.{js,css,html,md}\""
+  }
+}
